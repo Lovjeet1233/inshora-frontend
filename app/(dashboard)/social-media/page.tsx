@@ -131,13 +131,24 @@ export default function SocialMediaPage() {
         </CardHeader>
         <CardContent className="space-y-4">
           <div className="space-y-2">
-            <Label>Content Idea</Label>
+            <Label>Content Idea (min. 10 characters)</Label>
             <Textarea
               value={idea}
               onChange={(e) => setIdea(e.target.value)}
               placeholder="Describe what you want to create... e.g., 'A professional insurance infographic about health coverage'"
               rows={3}
+              className={idea.length > 0 && idea.length < 10 ? "border-red-500" : ""}
             />
+            <div className="flex justify-between text-xs text-muted-foreground">
+              <span>
+                {idea.length < 10 && idea.length > 0 && (
+                  <span className="text-red-500">At least 10 characters required</span>
+                )}
+              </span>
+              <span className={idea.length > 500 ? "text-red-500" : ""}>
+                {idea.length}/500
+              </span>
+            </div>
           </div>
 
           <div className="space-y-2">
@@ -157,7 +168,7 @@ export default function SocialMediaPage() {
             </div>
           </div>
 
-          <Button onClick={handleGenerateImages} disabled={isGenerating || !idea}>
+          <Button onClick={handleGenerateImages} disabled={isGenerating || !idea || idea.length < 10 || idea.length > 500}>
             {isGenerating ? (
               <>
                 <LoadingSpinner size={16} className="mr-2" />
