@@ -13,6 +13,7 @@ import { Sparkles, Heart, MessageCircle, Share2, Trash2, RefreshCw, TrendingUp, 
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { SocialMediaPost } from "@/types";
 import { formatDate, truncate } from "@/lib/utils";
+import { BACKEND_URL } from "@/lib/api";
 import Image from "next/image";
 
 export default function SocialMediaPage() {
@@ -41,7 +42,19 @@ export default function SocialMediaPage() {
     if (!idea) return;
     
     const result = await generateImages({ idea, style, platform: "facebook" });
-    setGeneratedData(result);
+    
+    // Prepend backend URL to image paths if they're relative
+    if (result && result.images) {
+      const fullImageUrls = result.images.map(img => 
+        img.startsWith('http') ? img : `${BACKEND_URL}${img}`
+      );
+      setGeneratedData({
+        ...result,
+        images: fullImageUrls
+      });
+    } else {
+      setGeneratedData(result);
+    }
   };
 
   const handlePostToFacebook = (imageUrl: string) => {
@@ -145,8 +158,8 @@ export default function SocialMediaPage() {
                   <span className="text-red-500">At least 10 characters required</span>
                 )}
               </span>
-              <span className={idea.length > 500 ? "text-red-500" : ""}>
-                {idea.length}/500
+              <span className={idea.length > 5000 ? "text-red-500" : ""}>
+                {idea.length}/5000
               </span>
             </div>
           </div>
@@ -168,7 +181,7 @@ export default function SocialMediaPage() {
             </div>
           </div>
 
-          <Button onClick={handleGenerateImages} disabled={isGenerating || !idea || idea.length < 10 || idea.length > 500}>
+          <Button onClick={handleGenerateImages} disabled={isGenerating || !idea || idea.length < 10 || idea.length > 5000}>
             {isGenerating ? (
               <>
                 <LoadingSpinner size={16} className="mr-2" />
